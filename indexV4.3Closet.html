@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FashionDex</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <!-- Login Screen -->
+    <div class="login-screen" id="loginScreen">
+        <div class="kh-bg-pattern"></div>
+        <div class="login-container">
+            <div class="corner-accent tl"></div>
+            <div class="corner-accent tr"></div>
+            <div class="corner-accent bl"></div>
+            <div class="corner-accent br"></div>
+            
+            <div class="login-header">
+                <div class="logo-crown">
+                    <div class="crown-icon">👑</div>
+                    <div class="crown-glow"></div>
+                </div>
+                <h1 class="app-title">FASHIONDEX</h1>
+                <p class="app-subtitle">Fashion Archive System</p>
+            </div>
+            
+            <div class="login-form">
+                <button class="google-btn" id="googleSignInBtn">
+                    <svg class="google-icon" viewBox="0 0 24 24">
+                        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                    </svg>
+                    Continue with Google
+                </button>
+
+                <div class="divider"><span>or</span></div>
+                
+                <div class="form-field">
+                    <label>Email</label>
+                    <input type="email" id="loginUsername" placeholder="your@email.com">
+                </div>
+                <div class="form-field">
+                    <label>Password</label>
+                    <input type="password" id="loginPassword" placeholder="Enter password">
+                </div>
+                
+                <button class="login-btn" id="loginBtn">
+                    <span id="loginBtnText">Sign In / Sign Up</span>
+                    <span id="loginBtnLoader" class="loader hidden"></span>
+                </button>
+                <button class="guest-btn" id="guestBtn">Continue as Guest</button>
+                
+                <div class="login-hint">UStyle Database</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main App -->
+    <div class="app-wrapper hidden" id="appWrapper">
+        <div class="kh-bg-stars"></div>
+        
+        <!-- Top Bar -->
+        <header class="top-bar">
+            <div class="bar-glow"></div>
+            <div class="top-bar-left">
+                <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
+                <div class="logo-mini">
+                    <div class="logo-shape"></div>
+                </div>
+                <span class="app-name">FASHIONDEX</span>
+                <span class="version-badge">US</span>
+            </div>
+            
+            <div class="top-bar-center">
+                <div class="entry-counter">
+                    <span class="counter-current" id="counterCurrent">0</span>
+                    <span class="counter-label">ENTRIES</span>
+                </div>
+            </div>
+            
+            <div class="top-bar-right">
+                <button class="mobile-info-btn" id="mobileInfoBtn">ℹ</button>
+                <div class="user-info" id="userInfo">
+                    <span class="user-role" id="userRole">Guest</span>
+                    <span class="user-name" id="userName">Viewer</span>
+                </div>
+                <div class="style-selector-wrapper">
+                    <div class="style-dropdown" id="styleDropdown">
+                        <div class="style-current" id="styleCurrent">
+                            <div class="theme-preview preview-default"></div>
+                        </div>
+                        <div class="style-options" id="styleOptions">
+                            <div class="style-option" data-style="default">
+                                <div class="theme-preview preview-default"></div>
+                            </div>
+                            <div class="style-option" data-style="cyberpunk">
+                                <div class="theme-preview preview-cyberpunk"></div>
+                            </div>
+                            <div class="style-option" data-style="pokedex">
+                                <div class="theme-preview preview-pokedex"></div>
+                            </div>
+                            <div class="style-option" data-style="gameboy">
+                                <div class="theme-preview preview-gameboy"></div>
+                            </div>
+                            <div class="style-option" data-style="cozy">
+                                <div class="theme-preview preview-cozy"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            <button class="logout-btn" id="logoutBtn">Sign Out</button>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <div class="main-container">
+            <!-- Left Panel - Command Menu -->
+            <aside class="left-panel">
+                <div class="panel-inner">
+                    <div class="panel-section">
+                        <div class="section-header">
+                            <span>CATEGORIES</span>
+                            <div class="header-line"></div>
+                        </div>
+                        <nav class="category-nav" id="categoryNav">
+                            <button class="category-item active" data-category="all">
+                                <div class="item-selector"></div>
+                                <span class="cat-icon">📋</span>
+                                <span class="cat-name">All</span>
+                                <span class="cat-count" id="countAll">0</span>
+                            </button>
+                            <button class="category-item" data-category="piece">
+                                <div class="item-selector"></div>
+                                <span class="cat-icon">👗</span>
+                                <span class="cat-name">Garments</span>
+                                <span class="cat-count" id="countPiece">0</span>
+                            </button>
+                            <button class="category-item" data-category="collection">
+                                <div class="item-selector"></div>
+                                <span class="cat-icon">📚</span>
+                                <span class="cat-name">Collections</span>
+                                <span class="cat-count" id="countCollection">0</span>
+                            </button>
+                            <button class="category-item" data-category="designer">
+                                <div class="item-selector"></div>
+                                <span class="cat-icon">✨</span>
+                                <span class="cat-name">Designers</span>
+                                <span class="cat-count" id="countDesigner">0</span>
+                            </button>
+                            <button class="category-item" data-category="house">
+                                <div class="item-selector"></div>
+                                <span class="cat-icon">🏛️</span>
+                                <span class="cat-name">Houses</span>
+                                <span class="cat-count" id="countHouse">0</span>
+                            </button>
+                            <button class="category-item" data-category="show">
+                                <div class="item-selector"></div>
+                                <span class="cat-icon">🎭</span>
+                                <span class="cat-name">Shows</span>
+                                <span class="cat-count" id="countShow">0</span>
+                            </button>
+                            <button class="category-item" data-category="trend">
+                                <div class="item-selector"></div>
+                                <span class="cat-icon">💫</span>
+                                <span class="cat-name">Trends</span>
+                                <span class="cat-count" id="countTrend">0</span>
+                            </button>
+                        </nav>
+                    </div>
+
+                    <div class="panel-section">
+                        <div class="section-header">
+                            <span>TAGS</span>
+                            <div class="header-line"></div>
+                        </div>
+                        <div class="tag-list" id="tagList"></div>
+                    </div>
+
+                    <div class="panel-section" id="closetSection">
+                        <div class="section-header">
+                            <span>MY CLOSET</span>
+                            <div class="header-line"></div>
+                        </div>
+                        <nav class="category-nav" id="closetNav">
+                            <button class="category-item closet-toggle" id="closetToggle">
+                                <div class="item-selector"></div>
+                                <span class="cat-icon">👔</span>
+                                <span class="cat-name">My Wardrobe</span>
+                                <span class="cat-count" id="countClosetAll">0</span>
+                            </button>
+                        </nav>
+                        <div class="closet-categories hidden" id="closetCategories">
+                            <button class="category-item closet-cat-item active" data-closet-category="all">
+                                <div class="item-selector"></div>
+                                <span class="cat-icon">📋</span>
+                                <span class="cat-name">All Items</span>
+                                <span class="cat-count" id="closetCountAll">0</span>
+                            </button>
+                            <button class="category-item closet-cat-item" data-closet-category="tops">
+                                <div class="item-selector"></div>
+                                <span class="cat-icon">👕</span>
+                                <span class="cat-name">Tops</span>
+                                <span class="cat-count" id="closetCountTops">0</span>
+                            </button>
+                            <button class="category-item closet-cat-item" data-closet-category="bottoms">
+                                <div class="item-selector"></div>
+                                <span class="cat-icon">👖</span>
+                                <span class="cat-name">Bottoms</span>
+                                <span class="cat-count" id="closetCountBottoms">0</span>
+                            </button>
+                            <button class="category-item closet-cat-item" data-closet-category="dresses">
+                                <div class="item-selector"></div>
+                                <span class="cat-icon">👗</span>
+                                <span class="cat-name">Dresses</span>
+                                <span class="cat-count" id="closetCountDresses">0</span>
+                            </button>
+                            <button class="category-item closet-cat-item" data-closet-category="outerwear">
+                                <div class="item-selector"></div>
+                                <span class="cat-icon">🧥</span>
+                                <span class="cat-name">Outerwear</span>
+                                <span class="cat-count" id="closetCountOuterwear">0</span>
+                            </button>
+                            <button class="category-item closet-cat-item" data-closet-category="shoes">
+                                <div class="item-selector"></div>
+                                <span class="cat-icon">👟</span>
+                                <span class="cat-name">Shoes</span>
+                                <span class="cat-count" id="closetCountShoes">0</span>
+                            </button>
+                            <button class="category-item closet-cat-item" data-closet-category="accessories">
+                                <div class="item-selector"></div>
+                                <span class="cat-icon">👜</span>
+                                <span class="cat-name">Accessories</span>
+                                <span class="cat-count" id="closetCountAccessories">0</span>
+                            </button>
+                            <button class="category-item closet-cat-item" data-closet-category="favorites">
+                                <div class="item-selector"></div>
+                                <span class="cat-icon">⭐</span>
+                                <span class="cat-name">Favorites</span>
+                                <span class="cat-count" id="closetCountFavorites">0</span>
+                            </button>
+                        </div>
+                    </div>
+
+                  <div class="panel-section" id="draftsSection" style="display: none;">
+                        <div class="section-header">
+                            <span>MY DRAFTS</span>
+                            <div class="header-line"></div>
+                        </div>
+                        <div id="draftsList"></div>
+                    </div>
+
+                    <div class="panel-section" id="adminActions">
+                        <button class="panel-btn add-btn" id="addEntryBtn">
+                            <span class="btn-glow"></span>
+                            <span>+ New Entry</span>
+                        </button>
+                        <button class="panel-btn secondary-btn" id="exportBtn">
+                            <span>↓ Export</span>
+                        </button>
+                        <button class="panel-btn secondary-btn" id="importBtn">
+                            <span>↑ Import</span>
+                        </button>
+                        <input type="file" id="importFile" accept=".json" style="display: none;">
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Center Panel - Main Content Area -->
+            <main class="center-panel">
+                <!-- DATABASE PAGE (Default) -->
+                <div class="app-page" id="databasePage">
+                    <div class="search-section">
+                        <div class="search-container">
+                            <div class="search-icon">🔍</div>
+                            <input type="text" class="search-input" id="searchInput" placeholder="Search entries...">
+                            <button class="search-clear" id="searchClear">×</button>
+                        </div>
+
+                        <div class="filter-stats">
+                            <div class="stat-item">
+                                <span class="stat-value" id="statTotal">0</span>
+                                <span class="stat-label">Total</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value" id="statFiltered">0</span>
+                                <span class="stat-label">Filtered</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Standard List View -->
+                    <div class="list-view" id="listView">
+                        <div class="list-scroll" id="listScroll"></div>
+                    </div>
+                </div>
+
+                <!-- CLOSET PAGE -->
+                <div class="app-page hidden" id="closetPage">
+                    <div class="search-section">
+                        <div class="search-container">
+                            <div class="search-icon">🔍</div>
+                            <input type="text" class="search-input" id="closetSearchInput" placeholder="Search closet items...">
+                            <button class="search-clear" id="closetSearchClear">×</button>
+                        </div>
+
+                        <div class="filter-stats">
+                            <div class="stat-item">
+                                <span class="stat-value" id="closetStatTotal">0</span>
+                                <span class="stat-label">Total</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value" id="closetStatFiltered">0</span>
+                                <span class="stat-label">Filtered</span>
+                            </div>
+                        </div>
+
+                        <!-- View Mode Toggle for Closet -->
+                        <div class="view-mode-toggle" id="closetViewModeToggle">
+                            <button class="view-mode-btn active" id="closetViewModeGrid" data-view="grid">
+                                ▦ Grid
+                            </button>
+                            <button class="view-mode-btn" id="closetViewModeList" data-view="list">
+                                ☰ List
+                            </button>
+                        </div>
+
+                        <!-- Add Item Button -->
+                        <div class="closet-add-section">
+                            <button class="panel-btn add-btn" id="addClosetItemBtn">
+                                <span class="btn-glow"></span>
+                                <span>+ Add Item</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Closet Grid View -->
+                    <div class="closet-grid-view" id="closetGridView">
+                        <div class="closet-grid-scroll" id="closetGridScroll"></div>
+                    </div>
+
+                    <!-- Closet List View -->
+                    <div class="closet-list-view hidden" id="closetListView">
+                        <div class="list-scroll" id="closetListScroll"></div>
+                    </div>
+                </div>
+            </main>
+
+            <!-- Right Panel - Entry Cards -->
+            <aside class="right-panel">
+                <div class="entry-card-view" id="entryCardView">
+                    <div class="no-selection">
+                        <div class="no-selection-icon">📂</div>
+                        <div class="no-selection-text">Select an entry to view details</div>
+                    </div>
+                </div>
+
+                <div class="entry-detail hidden" id="entryDetail">
+                    <div class="detail-header">
+                        <button class="back-btn" id="backBtn">
+                            <span>◄</span>
+                        </button>
+                        <div class="detail-actions detail-edit-actions" id="detailEditActions">
+                            <button class="icon-button" id="editBtn">✎</button>
+                        </div>
+                    </div>
+
+                    <div class="detail-content" id="detailContent"></div>
+                </div>
+            </aside>
+
+            <!-- Activity Log Panel (Info Button) -->
+        </div>
+        
+        <!-- Activity Log Panel (Info Button) -->
+        <aside class="activity-panel" id="activityPanel">
+            <div class="panel-header">
+                <h3 class="panel-title">Activity Log</h3>
+                <button class="panel-close" id="activityClose">×</button>
+            </div>
+            <div class="activity-scroll" id="activityScroll">
+                <div class="activity-empty">
+                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">📋</div>
+                    <div>No activity yet</div>
+                </div>
+            </div>
+        </aside>
+        
+        <div class="mobile-nav-overlay" id="mobileNavOverlay"></div>
+    </div>
+
+    <!-- Modal - Add/Edit Entry -->
+    <div class="modal-overlay hidden" id="modalOverlay">
+        <div class="modal-dialog">
+            <div class="corner-accent tl"></div>
+            <div class="corner-accent tr"></div>
+            <div class="corner-accent bl"></div>
+            <div class="corner-accent br"></div>
+            
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle">New Entry</h2>
+                <button class="modal-close" id="modalClose">×</button>
+            </div>
+            
+            <div class="modal-body">
+                <form id="entryForm" class="entry-form">
+                    <div class="form-section">
+                        <label class="form-label">Entry Type</label>
+                        <div class="type-grid" id="typeGrid">
+                            <div class="type-card" data-type="piece">
+                                <div class="type-emoji">👗</div>
+                                <div class="type-text">Garment</div>
+                            </div>
+                            <div class="type-card" data-type="collection">
+                                <div class="type-emoji">📚</div>
+                                <div class="type-text">Collection</div>
+                            </div>
+                            <div class="type-card" data-type="designer">
+                                <div class="type-emoji">✨</div>
+                                <div class="type-text">Designer</div>
+                            </div>
+                            <div class="type-card" data-type="house">
+                                <div class="type-emoji">🏛️</div>
+                                <div class="type-text">House</div>
+                            </div>
+                            <div class="type-card" data-type="show">
+                                <div class="type-emoji">🎭</div>
+                                <div class="type-text">Show</div>
+                            </div>
+                            <div class="type-card" data-type="trend">
+                                <div class="type-emoji">💫</div>
+                                <div class="type-text">Trend</div>
+                            </div>
+                        </div>
+                        <input type="hidden" id="entryType" required>
+                    </div>
+
+                    <div class="form-section">
+                        <label class="form-label">Name</label>
+                        <input type="text" class="form-input" id="entryName" required>
+                    </div>
+
+                    <div class="form-section">
+                        <label class="form-label">Subtitle</label>
+                        <input type="text" class="form-input" id="entrySubtitle" required>
+                    </div>
+
+                    <div class="form-section">
+                        <label class="form-label">Images</label>
+                        <div class="upload-area" id="uploadArea">
+                            <input type="file" id="imageInput" accept="image/*" multiple style="display: none;">
+                            <button type="button" class="upload-btn" id="uploadBtn">
+                                📷 Upload Images
+                            </button>
+                            <div class="image-preview-grid" id="imagePreviewGrid"></div>
+                        </div>
+                    </div>
+
+                    <div id="dynamicFields"></div>
+
+                    <div class="form-section">
+                        <label class="form-label">Tags (comma-separated)</label>
+                        <input type="text" class="form-input" id="entryTags" placeholder="iconic, vintage, minimalist">
+                    </div>
+
+                    <div class="form-section">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-textarea" id="entryDescription" rows="4" required></textarea>
+                    </div>
+
+                    <div class="form-section">
+                        <label class="form-label">Cultural Influence</label>
+                        <textarea class="form-textarea" id="entryInfluence" rows="3"></textarea>
+                    </div>
+
+                    <div class="form-section">
+                        <label class="form-label">Techniques</label>
+                        <textarea class="form-textarea" id="entryTechniques" rows="3"></textarea>
+                    </div>
+
+                   <div class="form-actions">
+                        <button type="button" class="form-button delete-btn hidden" id="deleteBtn">Delete</button>
+                        <button type="button" class="form-button cancel-btn" id="cancelBtn">Cancel</button>
+                        <button type="button" class="form-button draft-btn" id="saveDraftBtn">
+                            Save Draft
+                        </button>
+                        <button type="submit" class="form-button submit-btn" id="submitBtn">
+                            <span class="btn-glow"></span>
+                            <span>Add Entry</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Closet Modal - Add/Edit Closet Item -->
+    <div class="modal-overlay hidden" id="closetModalOverlay">
+        <div class="modal-dialog">
+            <div class="corner-accent tl"></div>
+            <div class="corner-accent tr"></div>
+            <div class="corner-accent bl"></div>
+            <div class="corner-accent br"></div>
+
+            <div class="modal-header">
+                <h2 class="modal-title" id="closetModalTitle">Add to Closet</h2>
+                <button class="modal-close" id="closetModalClose">×</button>
+            </div>
+
+            <div class="modal-body">
+                <form id="closetItemForm" class="entry-form">
+                    <div class="form-section">
+                        <label class="form-label">Category</label>
+                        <div class="type-grid" id="closetTypeGrid">
+                            <div class="type-card" data-closet-type="tops">
+                                <div class="type-emoji">👕</div>
+                                <div class="type-text">Tops</div>
+                            </div>
+                            <div class="type-card" data-closet-type="bottoms">
+                                <div class="type-emoji">👖</div>
+                                <div class="type-text">Bottoms</div>
+                            </div>
+                            <div class="type-card" data-closet-type="dresses">
+                                <div class="type-emoji">👗</div>
+                                <div class="type-text">Dresses</div>
+                            </div>
+                            <div class="type-card" data-closet-type="outerwear">
+                                <div class="type-emoji">🧥</div>
+                                <div class="type-text">Outerwear</div>
+                            </div>
+                            <div class="type-card" data-closet-type="shoes">
+                                <div class="type-emoji">👟</div>
+                                <div class="type-text">Shoes</div>
+                            </div>
+                            <div class="type-card" data-closet-type="accessories">
+                                <div class="type-emoji">👜</div>
+                                <div class="type-text">Accessories</div>
+                            </div>
+                        </div>
+                        <input type="hidden" id="closetItemCategory" required>
+                    </div>
+
+                    <div class="form-section">
+                        <label class="form-label">Item Name</label>
+                        <input type="text" class="form-input" id="closetItemName" placeholder="e.g., Vintage Band Tee" required>
+                    </div>
+
+                    <div class="form-section">
+                        <label class="form-label">Brand / Designer</label>
+                        <input type="text" class="form-input" id="closetItemBrand" placeholder="e.g., Levi's, Zara">
+                    </div>
+
+                    <div class="form-section">
+                        <label class="form-label">Subcategory</label>
+                        <input type="text" class="form-input" id="closetItemSubcategory" placeholder="e.g., T-Shirt, Jeans, Sneakers">
+                    </div>
+
+                    <div class="form-section">
+                        <label class="form-label">Color</label>
+                        <input type="text" class="form-input" id="closetItemColor" placeholder="e.g., Black, Navy Blue">
+                    </div>
+
+                    <div class="form-section">
+                        <label class="form-label">Size</label>
+                        <input type="text" class="form-input" id="closetItemSize" placeholder="e.g., M, 32, 9.5">
+                    </div>
+
+                    <div class="form-section">
+                        <label class="form-label">Images</label>
+                        <div class="upload-area" id="closetUploadArea">
+                            <input type="file" id="closetImageInput" accept="image/*" multiple style="display: none;">
+                            <button type="button" class="upload-btn" id="closetUploadBtn">
+                                📷 Upload Images
+                            </button>
+                            <div class="image-preview-grid" id="closetImagePreviewGrid"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <label class="form-label">Tags (comma-separated)</label>
+                        <input type="text" class="form-input" id="closetItemTags" placeholder="e.g., casual, summer, vintage">
+                    </div>
+
+                    <div class="form-section">
+                        <label class="form-label">Description / Notes</label>
+                        <textarea class="form-textarea" id="closetItemDescription" rows="3" placeholder="Any notes about this item..."></textarea>
+                    </div>
+
+                    <div class="form-section">
+                        <label class="form-label">Purchase Date</label>
+                        <input type="date" class="form-input" id="closetItemDate">
+                    </div>
+
+                    <div class="form-section">
+                        <label class="form-label">Purchase Price</label>
+                        <input type="number" step="0.01" class="form-input" id="closetItemPrice" placeholder="0.00">
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="form-button delete-btn hidden" id="closetDeleteBtn">Delete</button>
+                        <button type="button" class="form-button cancel-btn" id="closetCancelBtn">Cancel</button>
+                        <button type="submit" class="form-button submit-btn" id="closetSubmitBtn">
+                            <span class="btn-glow"></span>
+                            <span>Save to Closet</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- MOBILE MENU - NEW SEPARATE SYSTEM -->
+        <div class="mobile-menu-container" id="mobileMenuContainer">
+            <div class="mobile-menu-header">
+                <div class="mobile-menu-title">MENU</div>
+                <button class="mobile-menu-close" id="mobileMenuClose">✕</button>
+            </div>
+            <div class="mobile-menu-content" id="mobileMenuContent">
+                <!-- Content will be cloned from left panel -->
+            </div>
+        </div>
+
+        <div class="mobile-detail-overlay" id="mobileDetailOverlay">
+            <!-- Entry detail will be rendered here on mobile -->
+        </div>
+
+        <div class="mobile-backdrop" id="mobileBackdrop"></div>
+    <script src="script.js"></script>
+</body>
+</html>
